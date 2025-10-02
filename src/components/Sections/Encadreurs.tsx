@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Mail, Phone, Users, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Mail, Phone, Users, CreditCard as Edit, Trash2 } from 'lucide-react';
 import { mockUsers } from '../../data/mockData';
 import EncadreurFormModal from '../Modals/EncadreurFormModal';
 
