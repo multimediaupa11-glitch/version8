@@ -8,27 +8,36 @@ import {
   Settings,
   HelpCircle,
   Moon,
-  Sun
+  Sun,
+  UserCog
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
 }
 
-const navigation = [
-  { id: 'dashboard', name: 'Dashboard', icon: Home },
-  { id: 'interns', name: 'Stagiaires', icon: Users },
-  { id: 'projects', name: 'Projets', icon: FolderOpen },
-  { id: 'kanban', name: 'Kanban', icon: Trello },
-  { id: 'reports', name: 'Rapports', icon: FileText },
-  { id: 'settings', name: 'Paramètres', icon: Settings },
-];
+const getNavigation = (userRole: string) => {
+  const baseNavigation = [
+    { id: 'dashboard', name: 'Dashboard', icon: Home, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'interns', name: 'Stagiaires', icon: Users, roles: ['responsable_rh', 'encadreur'] },
+    { id: 'encadreurs', name: 'Encadreurs', icon: UserCog, roles: ['responsable_rh'] },
+    { id: 'projects', name: 'Projets', icon: FolderOpen, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'kanban', name: 'Kanban', icon: Trello, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'reports', name: 'Rapports', icon: FileText, roles: ['responsable_rh', 'encadreur'] },
+    { id: 'settings', name: 'Paramètres', icon: Settings, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+  ];
+
+  return baseNavigation.filter(item => item.roles.includes(userRole));
+};
 
 export default function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   const { isDark, toggleTheme } = useTheme();
+  const { authUser } = useAuth();
+  const navigation = getNavigation(authUser?.role || 'stagiaire');
 
   return (
     <div className="hidden md:block bg-white dark:bg-gray-900 h-screen shadow-sm border-r border-gray-100 dark:border-gray-800 fixed left-0 top-0 z-30 overflow-y-auto w-64">

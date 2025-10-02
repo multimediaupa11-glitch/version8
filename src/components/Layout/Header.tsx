@@ -173,13 +173,22 @@ export default function Header() {
             {showProfile && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-30">
                 <div className="py-1">
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      window.dispatchEvent(new CustomEvent('navigate', { detail: 'settings' }));
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                  >
                     <User className="h-4 w-4" />
                     Mon profil
                   </button>
                   <hr className="my-1 border-gray-200 dark:border-gray-700" />
                   <button
-                    onClick={handleSignOut}
+                    onClick={() => {
+                      setShowProfile(false);
+                      handleSignOut();
+                    }}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                   >
                     <LogOut className="h-4 w-4" />

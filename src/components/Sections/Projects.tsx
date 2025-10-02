@@ -1,14 +1,41 @@
 import React from 'react';
 import { useState } from 'react';
 import { FolderOpen, Plus, Calendar, Users } from 'lucide-react';
-import { mockProjects, mockInterns } from '../../data/mockData';
+import { mockProjects, mockInterns, mockUsers } from '../../data/mockData';
+import { useAuth } from '../../contexts/AuthContext';
 import ProjectForm from './ProjectForm';
 import ProjectDetailModal from '../Modals/ProjectDetailModal';
 
 export default function Projects() {
+  const { authUser } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showProjectDetail, setShowProjectDetail] = useState(false);
+
+  const userRole = authUser?.role || 'stagiaire';
+  const currentUser = mockUsers.find(u => u.profile.email === authUser?.profile.email);
+
+  const getFilteredProjects = () => {
+    if (userRole === 'responsable_rh') {
+      return mockProjects;
+    }
+
+    if (userRole === 'encadreur') {
+      return mockProjects.filter(project =>
+        project.assignedInterns.some(internId => currentUser?.stagiaires?.includes(internId))
+      );
+    }
+
+    if (userRole === 'stagiaire') {
+      return mockProjects.filter(project =>
+        project.assignedInterns.includes(currentUser?.id || '')
+      );
+    }
+
+    return mockProjects;
+  };
+
+  const filteredProjects = getFilteredProjects();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,13 +75,15 @@ export default function Projects() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Projets</h2>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Suivre et gérer les projets des stagiaires</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Nouveau Projet</span>
-        </button>
+        {(userRole === 'responsable_rh' || userRole === 'encadreur') && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Nouveau Projet</span>
+          </button>
+        )}
       </div>
 
       {/* Project Form Modal */}
@@ -80,7 +109,7 @@ export default function Projects() {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {mockProjects.map((project) => (
+        {filteredProjects.map((project) => (
           <div key={project.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-3">

@@ -7,6 +7,7 @@ import MobileMenu from './components/Layout/MobileMenu';
 import MobileNavbar from './components/Layout/MobileNavbar';
 import Dashboard from './components/Dashboard/Dashboard';
 import Interns from './components/Sections/Interns';
+import Encadreurs from './components/Sections/Encadreurs';
 import Projects from './components/Sections/Projects';
 import Kanban from './components/Sections/Kanban';
 import Reports from './components/Sections/Reports';
@@ -48,6 +49,8 @@ function AppContent() {
         return <Dashboard />;
       case 'interns':
         return <Interns />;
+      case 'encadreurs':
+        return <Encadreurs />;
       case 'projects':
         return <Projects />;
       case 'kanban':

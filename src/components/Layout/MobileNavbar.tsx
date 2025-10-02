@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, Home, Users, FolderOpen, Trello, FileText, Settings, Moon, Sun } from 'lucide-react';
+import { X, Home, Users, FolderOpen, Trello, FileText, Settings, Moon, Sun, UserCog } from 'lucide-react';
 import clsx from 'clsx';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface MobileNavbarProps {
   isOpen: boolean;
@@ -10,17 +11,24 @@ interface MobileNavbarProps {
   onSectionChange: (section: string) => void;
 }
 
-const navigation = [
-  { id: 'dashboard', name: 'Dashboard', icon: Home },
-  { id: 'interns', name: 'Stagiaires', icon: Users },
-  { id: 'projects', name: 'Projets', icon: FolderOpen },
-  { id: 'kanban', name: 'Kanban', icon: Trello },
-  { id: 'reports', name: 'Rapports', icon: FileText },
-  { id: 'settings', name: 'Paramètres', icon: Settings },
-];
+const getNavigation = (userRole: string) => {
+  const baseNavigation = [
+    { id: 'dashboard', name: 'Dashboard', icon: Home, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'interns', name: 'Stagiaires', icon: Users, roles: ['responsable_rh', 'encadreur'] },
+    { id: 'encadreurs', name: 'Encadreurs', icon: UserCog, roles: ['responsable_rh'] },
+    { id: 'projects', name: 'Projets', icon: FolderOpen, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'kanban', name: 'Kanban', icon: Trello, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+    { id: 'reports', name: 'Rapports', icon: FileText, roles: ['responsable_rh', 'encadreur'] },
+    { id: 'settings', name: 'Paramètres', icon: Settings, roles: ['responsable_rh', 'encadreur', 'stagiaire'] },
+  ];
+
+  return baseNavigation.filter(item => item.roles.includes(userRole));
+};
 
 export default function MobileNavbar({ isOpen, onClose, activeSection, onSectionChange }: MobileNavbarProps) {
   const { isDark, toggleTheme } = useTheme();
+  const { authUser } = useAuth();
+  const navigation = getNavigation(authUser?.role || 'stagiaire');
 
   const handleNavClick = (section: string) => {
     onSectionChange(section);
